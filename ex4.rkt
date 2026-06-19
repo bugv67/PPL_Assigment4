@@ -55,9 +55,10 @@
   (lambda (x init) ; init= init gusee
   (cons-lzl
    (cons init (abs (- (square init) x)))  ; head
-   (lambda () (sqrt-lzl x (improve init x)))) ; tail -promise
-   )
-  )
+   (lambda ()  ; because lazy
+    (sqrt-lzl x (improve init x)) ; tail -promise
+  )))
+)
 
 ;;Signature: find-first(lzlst, p)
 ;;Purpose: Return the first item in the given lazy list which satisfies the given predicate. If no such item exists return 'fail.
@@ -65,11 +66,13 @@
 ;;Pre-condition: /
 ;;Tests: (find-first (integers-from 1) (lambda (x) (> x 10))) --> 11; (find-first (cons-lzl 1 (lambda() (cons-lzl 2 (lambda () '())))) (lambda (x) (> x 10))) --> 'fail
 
+; predic is lamdaaaaaa
 (define find-first
-  (lambda (lz-lst p)
-   
-  )
-)
+(lambda (lzl p)
+(cond ((empty-lzl? lzl) 'fail)            ; end
+        ((p (head lzl)) (head lzl))        ; found - 
+        (else (find-first (tail lzl) p)))  ;continu to the next element
+))
 
 ;;Signature: sqrt2(x,init,epsilon)
 ;;Purpose: return approximation of the square root of the given number x, according to Newton method, starting from init guess with epsilon threshold.  The procedure uses sqrt-lzl and find-first procedures.
@@ -78,10 +81,13 @@
 ;;Tests: (sqrt2 2 1 0.0001) → 1 169/408
 (define sqrt2
   (lambda (x init epsilon)
-   @TODO
-  )
+     (car                  ; returns the nmber itself
+      (find-first          ; returns a pair
+      (sqrt-lzl x init)    ; list of gusess and e
+      (lambda(pair)        ; pre
+      (> epsilon (cdr pair))    ;(> a b) => (a > b)  
+    )))) 
 )
-
 
 ;;;; Q2
 
