@@ -97,9 +97,10 @@
 ;;Tests: (get-value '((a . 3) (b . 4)) 'b) --> 4,(get-value '((a . 3) (b . 4)) 'c) --> 'fail
 (define get-value
   (lambda (assoc-list key)
-   @TODO
-  )
-)
+    (cond ((empty? assoc-list) 'fail )  ;empty- no key found
+          ((eq? (car(car assoc-list)) key) (cdr (car assoc-list))) ; if the key of the head pair is key so go into the val of the head pair
+          (else (get-value (cdr assoc-list) key )) ; next key recuresion on the rest of the list
+  )))
 
 ;;Signature: get-value$(assoc-list, key, success, fail)
 ;;Purpose: Find the value of 'key'. If 'key' is found, then apply the continuation 'success' on its value val. Otherwise, apply the continuation 'fail'.
@@ -107,9 +108,11 @@
 ;;Tests: > (get-value$ '((a . 3) (b . 4)) 'b (lambda(x) (* x x )) (lambda()#f)) --> 16, (get-value$ '((a . 3) (b . 4)) 'c (lambda(x) (* x x)) (lambda()#f)) --> #f
 (define get-value$
   (lambda (assoc-list key success fail)
-   @TODO
-  )
-)
+    (cond ((empty? assoc-list) (fail))  ;empty- no key found
+          ((eq? (car(car assoc-list)) key) (success (cdr (car assoc-list)))) ; if the key of the head pair is key so go into the val of the head pair
+          (else (get-value$(cdr assoc-list) key success fail); next key recuresion on the rest of the list
+))) )
+
 
 ;;Signature: collect-all-values(list-assoc-lists, key)
 ;;Purpose: Returns a list of all values of the first occurrence of 'key' in each of the given association lists. If no such value, returns the empty list.
@@ -122,9 +125,12 @@
 
 (define collect-all-values-1
  (lambda (lists key)
-  @TODO
- )
-)
+  (if (empty? lists) '()
+  (let ((val (get-value (car lists) key)))
+  (if (eq? val 'fail)
+  (collect-all-values-1 (cdr lists) key)
+  (cons val  (collect-all-values-1 (cdr lists) key))
+  )))))
 
 (define collect-all-values-2
  (lambda (lists key)
